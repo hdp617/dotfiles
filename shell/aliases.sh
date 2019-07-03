@@ -1,16 +1,16 @@
-# Use colors in coreutils utilities output
+# ls aliases
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     alias ls='ls --color=auto'
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     alias ls='ls -G'
 fi
 
-alias grep='grep --color'
-
-# ls aliases
 alias ll='ls -lah'
 alias la='ls -A'
 alias l='ls'
+
+# grep aliases
+alias grep='grep --color'
 
 # Aliases to protect against overwriting
 alias cp='cp -i'
