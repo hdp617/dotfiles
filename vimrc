@@ -31,6 +31,8 @@ set nu " number lines
 set rnu " relative line numbering
 set incsearch " incremental search (as string is being typed)
 set hls " highlight search
+set noshowmode " hide mode
+set laststatus=2
 
 
 "--------------------
