@@ -15,6 +15,8 @@
     ~/.vim:
     ~/.vimrc:
     ~/.gitconfig:
+    ~/.zsh:
+    ~/.zshrc:
 
 - shell:
   - git submodule sync --recursive
