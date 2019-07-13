@@ -31,3 +31,6 @@
 [submodule "zsh/plugins/zsh-completions"]
 	path = zsh/plugins/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions
+[submodule "shell/plugins/nord-dircolors"]
+	path = shell/plugins/nord-dircolors
+	url = https://github.com/arcticicestudio/nord-dircolors.git
