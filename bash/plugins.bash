@@ -1,6 +1,4 @@
 # dircolors
 if [[ "$(tput colors)" == "256" ]]; then
-  if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    eval "$(dircolors ~/.shell/plugins/dircolors-solarized/dircolors.256dark)"
-  fi
+  eval "$(dircolors ~/.shell/plugins/nord-dircolors/src/dir_colors)"
 fi

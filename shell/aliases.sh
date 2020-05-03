@@ -1,10 +1,5 @@
 # ls aliases
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    alias ls='ls --color=auto'
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    alias ls='ls -G'
-fi
-
+alias ls='ls --color=auto'
 alias ll='ls -lah'
 alias la='ls -A'
 alias l='ls'

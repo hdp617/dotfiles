@@ -33,7 +33,5 @@ fi
 # dircolors
 
 if [[ "$(tput colors)" == "256" ]]; then
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        eval $(dircolors =(cat ~/.shell/plugins/nord-dircolors/src/dir_colors ~/.shell/dircolors.extra))
-    fi
+    eval $(dircolors =(cat ~/.shell/plugins/nord-dircolors/src/dir_colors ~/.shell/dircolors.extra))
 fi
