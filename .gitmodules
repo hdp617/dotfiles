@@ -1,16 +1,39 @@
 [submodule "dotbot"]
 	path = .dotbot
   	url = https://github.com/anishathalye/dotbot
-
-# shell
 [submodule "shell/plugins/nord-dircolors"]
 	path = shell/plugins/nord-dircolors
 	url = https://github.com/arcticicestudio/nord-dircolors.git
-	
-# vim
 [submodule "zsh/plugins/zsh-syntax-highlighting"]
 	path = zsh/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
 [submodule "zsh/plugins/zsh-completions"]
 	path = zsh/plugins/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions
+[submodule "vim/pack/vendor/start/dracula"]
+	path = vim/pack/vendor/start/dracula
+	url = https://github.com/dracula/vim.git
+[submodule "vim/pack/vendor/start/vim-json"]
+	path = vim/pack/vendor/start/vim-json
+	url = https://github.com/elzr/vim-json
+[submodule "vim/pack/vendor/start/lightline.vim"]
+	path = vim/pack/vendor/start/lightline.vim
+	url = https://github.com/itchyny/lightline.vim
+[submodule "vim/pack/vendor/start/nerdtree"]
+	path = vim/pack/vendor/start/nerdtree
+	url = https://github.com/scrooloose/nerdtree
+[submodule "vim/pack/vendor/start/rust.vim"]
+	path = vim/pack/vendor/start/rust.vim
+	url = https://github.com/wting/rust.vim
+[submodule "vim/pack/vendor/start/vim-go"]
+	path = vim/pack/vendor/start/vim-go
+	url = https://github.com/fatih/vim-go.git
+[submodule "vim/pack/vendor/start/vim-javascript"]
+	path = vim/pack/vendor/start/vim-javascript
+	url = https://github.com/pangloss/vim-javascript.git
+[submodule "vim/pack/vendor/start/Dockerfile.vim"]
+	path = vim/pack/vendor/start/Dockerfile.vim
+	url = https://github.com/ekalinin/Dockerfile.vim.git
+[submodule "vim/pack/vendor/start/vim-polyglot"]
+	path = vim/pack/vendor/start/vim-polyglot
+	url = https://github.com/sheerun/vim-polyglot.git
