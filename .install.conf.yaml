@@ -11,12 +11,13 @@
     ~/.bashrc:
     ~/.dotfiles: ''
     ~/.shell:
-    ~/.macos:
     ~/.vim:
     ~/.vimrc:
     ~/.gitconfig:
     ~/.zsh:
     ~/.zshrc:
+    ~/.vscode:
+    ~/.rustup:
 
 - shell:
   - git submodule sync --recursive
