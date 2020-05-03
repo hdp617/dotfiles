@@ -10,9 +10,6 @@
 [submodule "zsh/plugins/zsh-completions"]
 	path = zsh/plugins/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions
-[submodule "vim/pack/vendor/start/dracula"]
-	path = vim/pack/vendor/start/dracula
-	url = https://github.com/dracula/vim.git
 [submodule "vim/pack/vendor/start/vim-json"]
 	path = vim/pack/vendor/start/vim-json
 	url = https://github.com/elzr/vim-json
@@ -37,3 +34,6 @@
 [submodule "vim/pack/vendor/start/vim-polyglot"]
 	path = vim/pack/vendor/start/vim-polyglot
 	url = https://github.com/sheerun/vim-polyglot.git
+[submodule "vim/pack/vendor/start/material.vim"]
+	path = vim/pack/vendor/start/material.vim
+	url = https://github.com/kaicataldo/material.vim.git
