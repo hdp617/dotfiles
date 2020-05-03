@@ -1,12 +1,5 @@
 set nocompatible " not vi compatible
 
-"--------------
-" Load pathogen
-"--------------
-runtime bundle/vim-pathogen/autoload/pathogen.vim
-call pathogen#infect()
-call pathogen#helptags()
-
 "------------------
 " Syntax and indent
 "------------------
@@ -20,8 +13,13 @@ augroup CursorLineOnlyInActiveWindow
     autocmd WinLeave * setlocal nocursorline
 augroup END
 
-set background=dark
-colorscheme nord
+"------------------
+" Color scheme
+"------------------
+let g:material_terminal_italics = 1
+let g:material_theme_style = 'default'
+let g:lightline = { 'colorscheme': 'material_vim' }
+colorscheme material
 
 "---------------------
 " Basic editing config
