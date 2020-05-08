@@ -32,6 +32,14 @@ set hls " highlight search
 set noshowmode " hide mode
 set laststatus=2
 set backspace=indent,eol,start
+" use 4 spaces instead of tabs during formatting
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+" smart case-sensitive search
+set ignorecase
+set smartcase
 
 
 "--------------------
