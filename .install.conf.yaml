@@ -9,7 +9,7 @@
     ~/.bash:
     ~/.bashrc:
     ~/.bash_profile:
-    ~/.congig/alacritty: config/alacritty
+    ~/.config/alacritty: config/alacritty
     ~/.config/nvim: config/nvim
     ~/.dotfiles: ''
     ~/.gitconfig:
