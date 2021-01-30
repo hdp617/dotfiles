@@ -26,3 +26,11 @@ colors:
     magenta: '#f07178'  # Pink of the original material theme
     cyan:    '#89ddff'
     white:   '#ffffff'  # Arbitrary
+
+selection:
+
+  # When set to `true`, selected text will be copied to the primary clipboard.
+  save_to_clipboard: true
+
+# Live config reload (changes require restart)
+live_config_reload: true
