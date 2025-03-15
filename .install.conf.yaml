@@ -6,11 +6,6 @@
 - clean: ['~', '~/.config']
 
 - link:
-    ~/.bash:
-    ~/.bashrc:
-    ~/.bash_profile:
-    ~/.config/alacritty: config/alacritty
-    ~/.config/nvim: config/nvim
     ~/.dotfiles: ''
     ~/.gitconfig:
     ~/.gitignore_global:
