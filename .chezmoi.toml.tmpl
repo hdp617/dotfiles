@@ -1,0 +1,9 @@
+{{- $gitName := promptStringOnce . "git_name" "Git user.name for ~/.gitconfig_local" "" -}}
+{{- $gitEmail := promptStringOnce . "git_email" "Git user.email for ~/.gitconfig_local" "" -}}
+{{- $githubUser := promptStringOnce . "github_user" "GitHub username for [github] user in ~/.gitconfig_local" "" -}}
+mode = "symlink"
+
+[data]
+git_name = {{ $gitName | quote }}
+git_email = {{ $gitEmail | quote }}
+github_user = {{ $githubUser | quote }}

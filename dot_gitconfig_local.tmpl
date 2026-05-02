@@ -1,0 +1,10 @@
+# Managed by chezmoi. Set git_name, git_email, github_user under [data] (see chezmoi init / ~/.config/chezmoi/chezmoi.toml).
+[user]
+	name = {{ (index . "git_name") | default "" | quote }}
+	email = {{ (index . "git_email") | default "" | quote }}
+{{- $gh := (index . "github_user") | default "" -}}
+{{- if $gh }}
+
+[github]
+	user = {{ $gh | quote }}
+{{- end }}

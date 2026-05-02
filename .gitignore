@@ -1,0 +1,6 @@
+# Populated by chezmoi git-repo externals (.chezmoiexternal.toml); do not commit clones
+/vim/
+/zsh/plugins
+/shell/plugins
+
+.DS_Store

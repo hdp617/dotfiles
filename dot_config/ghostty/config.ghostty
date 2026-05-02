@@ -1,0 +1,37 @@
+# --- THEME
+theme = "Catppuccin Macchiato"
+
+# --- FONT
+font-family = "FiraCode Nerd Font"
+font-size = 13
+# calt: Standard Ligatures
+font-feature = calt
+# ss01: Slashed zero
+font-feature = ss01
+# ss02: Simplified lowercase 'g'
+font-feature = ss02
+# ss04: Thinner 'f'
+font-feature = ss04
+# ss05: Modern, smaller @ symbol
+font-feature = ss05
+# ss06: Thin backslash \ 
+font-feature = ss06
+# ss08: No-gap comparison operators (==, ===, !=)
+font-feature = ss08
+
+# --- WINDOW
+window-padding-x = 10
+window-padding-y = 10
+macos-titlebar-style = hidden
+
+# --- CURSOR
+cursor-style = block
+cursor-style-blink = true
+cursor-color = cell-foreground
+cursor-text = cell-background
+
+# --- BEHAVIOR
+scrollback-limit = 100000
+copy-on-select = true
+confirm-close-surface = true
+mouse-hide-while-typing = true
