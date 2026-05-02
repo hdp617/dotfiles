@@ -1,0 +1,21 @@
+# PATH (runs for login + non-interactive; keep deterministic)
+fish_add_path -m $HOME/.bin
+
+{{ if eq .chezmoi.os "darwin" -}}
+set -gx HOMEBREW_NO_ANALYTICS 1
+set -gx HOMEBREW_AUTO_UPDATE_SECS 86400
+set -l brew_prefix /opt/homebrew
+fish_add_path -m $brew_prefix/sbin $brew_prefix/bin \
+    $brew_prefix/opt/coreutils/libexec/gnubin \
+    $brew_prefix/opt/python/libexec/bin
+{{ end }}
+
+if command -q chezmoi
+    set -l _czm_src (chezmoi source-path 2>/dev/null)
+    if test -n "$_czm_src" -a -d "$_czm_src/bin"
+        fish_add_path -m "$_czm_src/bin"
+    end
+end
+
+set -gx GOPATH $HOME/.go
+fish_add_path -m $GOPATH/bin $HOME/.cargo/bin
