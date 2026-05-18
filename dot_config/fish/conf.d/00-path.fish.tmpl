@@ -1,11 +1,8 @@
-# PATH (runs for login + non-interactive; keep deterministic)
-fish_add_path -m $HOME/.bin
-
+# --- BASE PACKAGE MANAGERS
 # --- Homebrew Prefix ---
 {{ if eq .chezmoi.os "darwin" -}}
 set -l brew_prefix /opt/homebrew
 {{ else if eq .chezmoi.os "linux" -}}
-# Check for global install first, then fall back to home directory
 if test -d /home/linuxbrew/.linuxbrew
     set brew_prefix /home/linuxbrew/.linuxbrew
 else
@@ -18,24 +15,26 @@ if test -d "$brew_prefix"
     set -gx HOMEBREW_NO_ANALYTICS 1
     set -gx HOMEBREW_AUTO_UPDATE_SECS 86400
 
-    # We add paths and move them to the front (-m) to prioritize Brew binaries
-    fish_add_path -m \
-        $brew_prefix/sbin \
-        $brew_prefix/bin \
-        {{ if eq .chezmoi.os "darwin" -}}
-        $brew_prefix/opt/python/libexec/bin \
-        $brew_prefix/opt/coreutils/libexec/gnubin \
-        {{ end -}}
-        # The line below is a 'no-op' to ensure the trailing backslash doesn't break
-        $brew_prefix/bin 
+    # Add Homebrew to the front
+    fish_add_path -g -p $brew_prefix/bin $brew_prefix/sbin
+
+    # macOS Specific Overrides
+    {{ if eq .chezmoi.os "darwin" -}}
+    fish_add_path -g -p $brew_prefix/opt/python/libexec/bin $brew_prefix/opt/coreutils/libexec/gnubin
+    {{ end -}}
 end
+
+# --- LANGUAGE RUNTIMES & SPECIFIC TOOLS
+set -gx GOPATH $HOME/.go
+fish_add_path -g -p $GOPATH/bin $HOME/.cargo/bin
 
 if command -q chezmoi
     set -l _czm_src (chezmoi source-path 2>/dev/null)
     if test -n "$_czm_src" -a -d "$_czm_src/bin"
-        fish_add_path -m "$_czm_src/bin"
+        fish_add_path -g -p "$_czm_src/bin"
     end
 end
 
-set -gx GOPATH $HOME/.go
-fish_add_path -m $GOPATH/bin $HOME/.cargo/bin
+# --- PERSONAL USER BINARIES
+fish_add_path -g -p $HOME/.local/bin
+fish_add_path -g -p $HOME/bin
