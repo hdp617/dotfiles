@@ -7,7 +7,7 @@ type = "git-repo"
 url = "https://github.com/itchyny/lightline.vim"
 refreshPeriod = "0"
 [".vim/pack/vendor/start/lightline.vim".clone]
-args = ["--branch", "d042c506cb2e7a59112a72447e0b5fe8739d9d1d", "--depth", "1"]
+args = ["--branch", "master", "--depth", "1"]
 [".vim/pack/vendor/start/lightline.vim".pull]
 args = ["--ff-only"]
 
@@ -43,7 +43,7 @@ type = "git-repo"
 url = "https://github.com/kaicataldo/material.vim.git"
 refreshPeriod = "0"
 [".vim/pack/vendor/start/material.vim".clone]
-args = ["--branch", "32f423c825ee89a37d66e3d8f00e777c7d8a41ab", "--depth", "1"]
+args = ["--branch", "main", "--depth", "1"]
 [".vim/pack/vendor/start/material.vim".pull]
 args = ["--ff-only"]
 

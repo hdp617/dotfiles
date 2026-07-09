@@ -17,7 +17,19 @@ jobs:
 
       - name: Install chezmoi
         run: |
-          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" "$CHEZMOI_VERSION"
+          mkdir -p "$HOME/.local/bin"
+          version="${CHEZMOI_VERSION#v}"
+          for attempt in 1 2 3; do
+            if curl -fsSL \
+              "https://github.com/twpayne/chezmoi/releases/download/v${version}/chezmoi_${version}_linux_amd64.tar.gz" \
+              -o /tmp/chezmoi.tar.gz; then
+              tar -xzf /tmp/chezmoi.tar.gz -C "$HOME/.local/bin" chezmoi
+              chmod +x "$HOME/.local/bin/chezmoi"
+              break
+            fi
+            sleep $((attempt * 5))
+          done
+          "$HOME/.local/bin/chezmoi" --version
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Write test chezmoi config
