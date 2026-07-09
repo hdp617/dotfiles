@@ -1,0 +1,47 @@
+name: chezmoi
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CHEZMOI_VERSION: v2.71.0
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" "$CHEZMOI_VERSION"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Write test chezmoi config
+        run: |
+          mkdir -p "$HOME/.config/chezmoi"
+          cat > "$HOME/.config/chezmoi/chezmoi.toml" <<EOF
+          mode = "symlink"
+          sourceDir = "${{ github.workspace }}"
+          [data]
+          git_name = "CI User"
+          git_email = "ci@example.com"
+          github_user = "cibot"
+          machine_name = "ci"
+          EOF
+
+      - name: Render templates
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' f; do
+            echo "Rendering ${f#./}"
+            chezmoi execute-template --init \
+              -c "$HOME/.config/chezmoi/chezmoi.toml" \
+              < "$f" > /dev/null
+          done < <(find . -name '*.tmpl' -not -path './.git/*' -print0)
+
+      - name: Dry-run apply
+        run: chezmoi apply --dry-run --verbose --refresh-externals=never

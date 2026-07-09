@@ -1,0 +1,91 @@
+name: dependency-audit
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .chezmoiexternal.toml
+      - dot_Brewfile
+      - .github/workflows/dependency-audit.yml
+
+jobs:
+  osv-scan-externals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install osv-scanner
+        run: |
+          go install github.com/google/osv-scanner/v2/cmd/osv-scanner@v2.3.1
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Clone pinned chezmoi externals
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dotfiles-externals
+          python3 <<'PY'
+          import pathlib
+          import re
+          import subprocess
+
+          text = pathlib.Path(".chezmoiexternal.toml").read_text()
+          entries = re.findall(
+              r'\["([^"]+)"\]\s*\ntype = "git-repo"\s*\nurl = "([^"]+)"[\s\S]*?args = \["--branch", "([^"]+)"',
+              text,
+          )
+          for path, repo_url, branch in entries:
+              if repo_url.endswith(".git"):
+                  repo_url = repo_url[:-4]
+              name = path.replace("/", "_").lstrip(".")
+              dest = pathlib.Path("/tmp/dotfiles-externals") / name
+              print(f"Cloning {repo_url} @ {branch} -> {dest}")
+              subprocess.run(
+                  [
+                      "git", "clone", "--depth", "1",
+                      "--branch", branch,
+                      repo_url + ".git", str(dest),
+                  ],
+                  check=True,
+              )
+          PY
+
+      - name: Scan externals with OSV
+        run: osv-scanner scan source --recursive /tmp/dotfiles-externals
+
+  brew-outdated-report:
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Report outdated Homebrew packages from dot_Brewfile
+        run: |
+          set -uo pipefail
+          brew update
+          {
+            echo "## Homebrew packages referenced in dot_Brewfile"
+            echo '```'
+            while read -r line; do
+              case "$line" in
+                brew\ \"*\"|cask\ \"*\")
+                  pkg=$(echo "$line" | sed -E 's/^(brew|cask) "([^"]+)".*/\2/')
+                  kind=$(echo "$line" | sed -E 's/^(brew|cask).*/\1/')
+                  if [ "$kind" = cask ]; then
+                    outdated=$(brew outdated --cask --quiet "$pkg" 2>/dev/null || true)
+                  else
+                    outdated=$(brew outdated --formula --quiet "$pkg" 2>/dev/null || true)
+                  fi
+                  if [ -n "$outdated" ]; then
+                    echo "OUTDATED $kind $pkg"
+                  else
+                    echo "current  $kind $pkg"
+                  fi
+                  ;;
+              esac
+            done < dot_Brewfile
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

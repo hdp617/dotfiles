@@ -1,10 +1,13 @@
 # Paths are home-relative (e.g. .vim/...) so clones follow ~/.vim → sourceDir/vim.
 # Vim: prefer vim-polyglot for syntax; keep vim-go (disable polyglot go); NERDTree = preservim fork.
+# Plugin versions are pinned via clone --branch so Renovate can bump them in this file.
 
 [".vim/pack/vendor/start/lightline.vim"]
 type = "git-repo"
 url = "https://github.com/itchyny/lightline.vim"
 refreshPeriod = "0"
+[".vim/pack/vendor/start/lightline.vim".clone]
+args = ["--branch", "d042c506cb2e7a59112a72447e0b5fe8739d9d1d", "--depth", "1"]
 [".vim/pack/vendor/start/lightline.vim".pull]
 args = ["--ff-only"]
 
@@ -12,6 +15,8 @@ args = ["--ff-only"]
 type = "git-repo"
 url = "https://github.com/preservim/nerdtree.git"
 refreshPeriod = "0"
+[".vim/pack/vendor/start/nerdtree".clone]
+args = ["--branch", "7.1.3", "--depth", "1"]
 [".vim/pack/vendor/start/nerdtree".pull]
 args = ["--ff-only"]
 
@@ -19,6 +24,8 @@ args = ["--ff-only"]
 type = "git-repo"
 url = "https://github.com/fatih/vim-go.git"
 refreshPeriod = "0"
+[".vim/pack/vendor/start/vim-go".clone]
+args = ["--branch", "v1.29", "--depth", "1"]
 [".vim/pack/vendor/start/vim-go".pull]
 args = ["--ff-only"]
 
@@ -26,6 +33,8 @@ args = ["--ff-only"]
 type = "git-repo"
 url = "https://github.com/sheerun/vim-polyglot.git"
 refreshPeriod = "0"
+[".vim/pack/vendor/start/vim-polyglot".clone]
+args = ["--branch", "v4.17.0", "--depth", "1"]
 [".vim/pack/vendor/start/vim-polyglot".pull]
 args = ["--ff-only"]
 
@@ -33,6 +42,8 @@ args = ["--ff-only"]
 type = "git-repo"
 url = "https://github.com/kaicataldo/material.vim.git"
 refreshPeriod = "0"
+[".vim/pack/vendor/start/material.vim".clone]
+args = ["--branch", "32f423c825ee89a37d66e3d8f00e777c7d8a41ab", "--depth", "1"]
 [".vim/pack/vendor/start/material.vim".pull]
 args = ["--ff-only"]
 
@@ -40,6 +51,8 @@ args = ["--ff-only"]
 type = "git-repo"
 url = "https://github.com/haya14busa/incsearch.vim"
 refreshPeriod = "0"
+[".vim/pack/vendor/start/incsearch.vim".clone]
+args = ["--branch", "v2.0.1", "--depth", "1"]
 [".vim/pack/vendor/start/incsearch.vim".pull]
 args = ["--ff-only"]
 
@@ -48,6 +61,8 @@ args = ["--ff-only"]
 type = "git-repo"
 url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"
 refreshPeriod = "0"
+[".zsh/plugins/zsh-syntax-highlighting".clone]
+args = ["--branch", "0.8.0", "--depth", "1"]
 [".zsh/plugins/zsh-syntax-highlighting".pull]
 args = ["--ff-only"]
 
@@ -55,5 +70,17 @@ args = ["--ff-only"]
 type = "git-repo"
 url = "https://github.com/zsh-users/zsh-completions.git"
 refreshPeriod = "0"
+[".zsh/plugins/zsh-completions".clone]
+args = ["--branch", "0.36.0", "--depth", "1"]
 [".zsh/plugins/zsh-completions".pull]
+args = ["--ff-only"]
+
+# Shell
+[".shell/plugins/nord-dircolors"]
+type = "git-repo"
+url = "https://github.com/nordtheme/dircolors.git"
+refreshPeriod = "0"
+[".shell/plugins/nord-dircolors".clone]
+args = ["--branch", "v0.2.0", "--depth", "1"]
+[".shell/plugins/nord-dircolors".pull]
 args = ["--ff-only"]

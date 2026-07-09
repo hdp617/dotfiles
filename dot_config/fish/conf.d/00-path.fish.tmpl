@@ -35,6 +35,7 @@ if command -q chezmoi
     end
 end
 
-# --- PERSONAL USER BINARIES
+# --- PERSONAL USER BINARIES (chezmoi dot_bin → ~/.bin)
+fish_add_path -g -p $HOME/.bin
 fish_add_path -g -p $HOME/.local/bin
 fish_add_path -g -p $HOME/bin
