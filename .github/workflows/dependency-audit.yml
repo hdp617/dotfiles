@@ -1,0 +1,73 @@
+name: dependency-audit
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .chezmoiexternal.toml
+      - dot_Brewfile
+      - .github/workflows/dependency-audit.yml
+
+jobs:
+  osv-scan-externals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install osv-scanner
+        run: |
+          go install github.com/google/osv-scanner/v2/cmd/osv-scanner@v2.3.1
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Download pinned chezmoi externals
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dotfiles-externals
+          grep -E '^url = ' .chezmoiexternal.toml | sed 's/^url = "//;s/"$//' | while read -r url; do
+            name=$(basename "$url" .tar.gz | sed 's/-[a-f0-9]\{40\}$//')
+            echo "Fetching $name"
+            curl -fsSL "$url" -o "/tmp/$name.tar.gz"
+            mkdir -p "/tmp/dotfiles-externals/$name"
+            tar -xzf "/tmp/$name.tar.gz" -C "/tmp/dotfiles-externals/$name" --strip-components=1
+          done
+
+      - name: Scan externals with OSV
+        run: osv-scanner scan source --recursive /tmp/dotfiles-externals
+
+  brew-outdated-report:
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Report outdated Homebrew packages from dot_Brewfile
+        run: |
+          set -uo pipefail
+          brew update
+          {
+            echo "## Homebrew packages referenced in dot_Brewfile"
+            echo '```'
+            while read -r line; do
+              case "$line" in
+                brew\ \"*\"|cask\ \"*\")
+                  pkg=$(echo "$line" | sed -E 's/^(brew|cask) "([^"]+)".*/\2/')
+                  kind=$(echo "$line" | sed -E 's/^(brew|cask).*/\1/')
+                  if [ "$kind" = cask ]; then
+                    outdated=$(brew outdated --cask --quiet "$pkg" 2>/dev/null || true)
+                  else
+                    outdated=$(brew outdated --formula --quiet "$pkg" 2>/dev/null || true)
+                  fi
+                  if [ -n "$outdated" ]; then
+                    echo "OUTDATED $kind $pkg"
+                  else
+                    echo "current  $kind $pkg"
+                  fi
+                  ;;
+              esac
+            done < dot_Brewfile
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
