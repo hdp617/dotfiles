@@ -1,0 +1,85 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits"
+  ],
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Chezmoi archive externals pinned to git tags",
+      "managerFilePatterns": ["^\\.chezmoiexternal\\.toml$"],
+      "matchStrings": [
+        "url = \"https://github\\.com/(?<depName>[^/]+/[^/]+)/archive/refs/tags/(?<currentValue>[^\"]+)\\.tar\\.gz\""
+      ],
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Chezmoi archive externals pinned to commit SHAs",
+      "managerFilePatterns": ["^\\.chezmoiexternal\\.toml$"],
+      "matchStrings": [
+        "url = \"https://github\\.com/(?<depName>[^/]+/[^/]+)/archive/(?<currentDigest>[a-f0-9]{40})\\.tar\\.gz\""
+      ],
+      "datasourceTemplate": "git-refs",
+      "currentValueTemplate": "HEAD",
+      "versioningTemplate": "git"
+    },
+    {
+      "customType": "regex",
+      "description": "Homebrew formulae in dot_Brewfile",
+      "managerFilePatterns": ["^dot_Brewfile$"],
+      "matchStrings": [
+        "^brew \"(?<depName>[a-z0-9][a-z0-9+@._/-]*)\"\\s*$"
+      ],
+      "datasourceTemplate": "repology",
+      "lookupNameTemplate": "homebrew/{{{depName}}}",
+      "versioningTemplate": "loose"
+    },
+    {
+      "customType": "regex",
+      "description": "Homebrew casks in dot_Brewfile",
+      "managerFilePatterns": ["^dot_Brewfile$"],
+      "matchStrings": [
+        "^cask \"(?<depName>[a-z0-9][a-z0-9+@._/-]*)\"\\s*$"
+      ],
+      "datasourceTemplate": "repology",
+      "lookupNameTemplate": "homebrew_casks/{{{depName}}}",
+      "versioningTemplate": "loose"
+    },
+    {
+      "customType": "regex",
+      "description": "Go tools installed via brew bundle go directive",
+      "managerFilePatterns": ["^dot_Brewfile$"],
+      "matchStrings": [
+        "^go \"(?<depName>[^\"]+)\"\\s*$"
+      ],
+      "datasourceTemplate": "go",
+      "versioningTemplate": "go"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Group chezmoi external bumps",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": [".chezmoiexternal.toml"],
+      "groupName": "chezmoi externals"
+    },
+    {
+      "description": "Group Homebrew bundle updates",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": ["dot_Brewfile"],
+      "groupName": "homebrew bundle"
+    },
+    {
+      "description": "Group GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    }
+  ]
+}
