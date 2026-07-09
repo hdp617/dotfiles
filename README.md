@@ -37,8 +37,23 @@ Or your usual **`dfu`** alias if it wraps the same steps.
 
 ## Layout notes
 
-- **Fish** (`dot_config/fish/`): `conf.d/` snippets (PATH from **`00-chezmoi-path.fish.tmpl`**, env, abbreviations, dircolors, Catppuccin theme, vi bindings, secrets) and **`functions/`** for `dfu`, `load_secret`, `cdgr`, `up`, helpers, plus **`fish_prompt`** / **`fish_right_prompt`** (cwd + `USER at <~/.name>` + `fish_git_prompt`). Not ported from zsh: async right-prompt, `tog` / `vshow` / `vmultiline`.
-- **Vim externals** ([`.chezmoiexternal.toml`](.chezmoiexternal.toml)): [vim-polyglot](https://github.com/sheerun/vim-polyglot) for bundled syntax; [vim-go](https://github.com/fatih/vim-go) with **`g:polyglot_disabled = ['go']`** in `dot_vimrc` so Go stays on vim-go. Separate trees for [preservim/nerdtree](https://github.com/preservim/nerdtree), [lightline.vim](https://github.com/itchyny/lightline.vim), [material.vim](https://github.com/kaicataldo/material.vim), [incsearch.vim](https://github.com/haya14busa/incsearch.vim). Dircolors: [nordtheme/dircolors](https://github.com/nordtheme/dircolors) under `~/.shell/plugins/nord-dircolors/`.
-- **`dot_zshrc.tmpl`**: main zsh init (PATH, Homebrew on macOS, shared `~/.shell` and `~/.zsh` bits). Optional **`~/.zshrc.local`** is sourced last for machine-only overrides (not in this repo).
+- **Fish** (`dot_config/fish/`): primary shell. Modular `conf.d/` snippets:
+  - **`00-path.fish.tmpl`** — Homebrew (macOS/Linuxbrew), Go/Rust/chezmoi bin paths, `~/.local/bin`, `~/bin` (does not yet include chezmoi's `~/.bin`; zsh does)
+  - **`10-shell-env.fish`** — PIP/Python env mirrors `~/.shell/external.sh`
+  - **`20-abbreviations.fish`** — cloud/IaC abbreviations, `ls`/`grep` aliases
+  - **`40-theme.fish`** — Catppuccin Macchiato via `fish_config theme`
+  - **`50-editor-history.fish`** — `EDITOR=vim`, vi key bindings, large history
+  - **`55-git-prompt.fish`** — `fish_git_prompt` color/state variables (used when a custom right prompt calls it)
+  - **`60-secrets.fish`** — `load_secret GEMINI_API_KEY`
+  - **`functions/`** — `dfu`, `load_secret`, `mcd`, `peek`, `up`
+  - Uses Fish **default** left/right prompts today (no custom `fish_prompt` / `fish_right_prompt` yet). Git info appears only if you add a right prompt that calls `fish_git_prompt`.
+  - Helpers still **zsh-only** via `~/.shell/aliases.sh`: `cdgr`, `fpr`, `serve`, `jump`, `xin`, `nonascii`, `syspip*`, screen `cd` hack.
+  - **Dircolors** (nord) is configured for **zsh only** (`zsh/plugins_after.zsh`), not Fish.
+  - Zsh prompt extras not ported: async right-prompt, `tog` / `vshow` / `vmultiline`.
+- **Zsh** (`dot_zshrc.tmpl`, `~/.zsh` symlink): legacy/compatibility shell. Sources `~/.shell/{functions,external,aliases}.sh` and `~/.zsh/{settings,prompt,plugins_*}.sh`. Optional **`~/.zshrc.local`** for machine-only overrides.
+- **Vim externals** ([`.chezmoiexternal.toml`](.chezmoiexternal.toml)): [vim-polyglot](https://github.com/sheerun/vim-polyglot) for bundled syntax; [vim-go](https://github.com/fatih/vim-go) with **`g:polyglot_disabled = ['go']`** in `dot_vimrc` so Go stays on vim-go. Separate trees for [preservim/nerdtree](https://github.com/preservim/nerdtree), [lightline.vim](https://github.com/itchyny/lightline.vim), [material.vim](https://github.com/kaicataldo/material.vim), [incsearch.vim](https://github.com/haya14busa/incsearch.vim). Dircolors: [nordtheme/dircolors](https://github.com/nordtheme/dircolors) under `~/.shell/plugins/nord-dircolors/` (requires the chezmoi external entry).
+- **Bin scripts** (`dot_bin/` → `~/.bin/`): `tmx`, `git-diff-changes` (zsh-specific). Zsh prepends `~/.bin` on PATH; verify Fish PATH includes it if you use Fish daily.
+- **`dot_name.tmpl`** → `~/.name`: currently set to `{{ .chezmoi.os }}` (`darwin` / `linux`). Used by tmux status bar and zsh right prompt.
 - **`dot_hammerspoon/`** is skipped on non-macOS via **`.chezmoiignore.tmpl`**.
-- **`dotfiles-local/`** is ignored until removed locally.
+- **Brewfiles**: `dot_Brewfile` → `~/.Brewfile` (full macOS bundle, applied by `run_onchange_install-packages.sh.tmpl` on Darwin). Root `Brewfile` is a smaller reference set, not deployed by chezmoi.
+- **Local overrides**: `~/.config/fish/config.local.fish`, `~/.zshrc.local`, `~/.tmux_local.conf`, `~/.gitconfig_local` (templated at init).
