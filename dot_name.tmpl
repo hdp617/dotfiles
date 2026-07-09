@@ -1,1 +1,1 @@
-{{ .chezmoi.os }}
+{{ (index . "machine_name") | default .chezmoi.hostname }}
