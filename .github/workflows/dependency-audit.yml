@@ -53,7 +53,19 @@ jobs:
           PY
 
       - name: Scan externals with OSV
-        run: osv-scanner scan source --recursive /tmp/dotfiles-externals
+        run: |
+          # Drop test-only trees (e.g. vim-go fixtures) that produce stdlib noise.
+          find /tmp/dotfiles-externals -type d \( -name test-fixtures -o -name testdata -o -name tests \) -print0 \
+            | xargs -0 rm -rf
+          set +e
+          osv-scanner scan source --recursive /tmp/dotfiles-externals
+          code=$?
+          set -e
+          if [ "$code" -eq 128 ]; then
+            echo "No package manifests in externals; scan skipped."
+            exit 0
+          fi
+          exit "$code"
 
   brew-outdated-report:
     runs-on: macos-latest
