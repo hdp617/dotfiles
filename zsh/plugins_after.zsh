@@ -29,9 +29,3 @@ if [[ "$(tput colors)" == "256" ]]; then
     ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]=fg=136
     ZSH_HIGHLIGHT_STYLES[assign]=fg=037
 fi
-
-# dircolors
-
-if [[ "$(tput colors)" == "256" ]]; then
-    eval $(dircolors =(cat ~/.shell/plugins/nord-dircolors/src/dir_colors ~/.shell/dircolors.extra))
-fi
