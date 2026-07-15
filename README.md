@@ -4,7 +4,7 @@
 
 **Shell:** **Fish** is the intended daily driver (`~/.config/fish/` from **`dot_config/fish/`**). **Zsh** remains available (`dot_zshrc.tmpl`, `~/.zsh` symlink) for compatibility or scripts.
 
-Large trees (`vim/`, `zsh/`, `shell/` under the source dir) are populated by **`git-repo` externals** in [`.chezmoiexternal.toml`](.chezmoiexternal.toml). External paths are **home-relative** (`.vim/…`, `.zsh/…`, `.shell/…`) so clones land behind the `~/.vim`, `~/.zsh`, and `~/.shell` symlinks into this repo.
+Large trees (`vim/`, `zsh/`, `shell/` under the source dir) are symlinked into `$HOME`; third-party plugins are **commit-pinned `archive` externals** (SHA-256 checked) in [`.chezmoiexternal.toml`](.chezmoiexternal.toml) under **`~/.local/share/vim`** and **`~/.local/share/zsh/plugins`** (outside those symlinks so chezmoi can verify archives).
 
 ## First-time setup
 
@@ -15,7 +15,7 @@ Large trees (`vim/`, `zsh/`, `shell/` under the source dir) are populated by **`
    chezmoi init --apply YOUR_GITHUB_USERNAME/dotfiles
    ```
 
-3. On **`chezmoi apply`**, chezmoi clones or updates externals under **`$(chezmoi source-path)`** (see `refreshPeriod` in `.chezmoiexternal.toml`; **`0`** means no periodic `git pull`—use **`chezmoi apply --refresh-externals`** when you want to update plugins).
+3. On **`chezmoi apply`**, chezmoi downloads pinned plugin archives into **`~/.local/share/…`** (`refreshPeriod = "0"` skips re-download unless forced). To bump a plugin, change its commit URL + `checksum.sha256` in `.chezmoiexternal.toml`, then run **`dfup`** (or `chezmoi apply --refresh-externals=always`). Removable leftovers from the old layout: `~/.vim/pack` and `~/.zsh/plugins/zsh-{completions,syntax-highlighting}`.
 
 4. Set Fish as the login shell (after `brew install fish` or your distro package), then:
 
@@ -30,15 +30,15 @@ Large trees (`vim/`, `zsh/`, `shell/` under the source dir) are populated by **`
 
 ```bash
 chezmoi git pull -- --ff-only
-chezmoi apply --refresh-externals
+chezmoi apply --refresh-externals=never
 ```
 
-Or your usual **`dfu`** alias if it wraps the same steps.
+Or **`dfu`** (same steps). Use **`dfup`** only when re-applying/re-downloading the pinned plugin archives.
 
 ## Layout notes
 
-- **Fish** (`dot_config/fish/`): `conf.d/` snippets (PATH from **`00-chezmoi-path.fish.tmpl`**, env, abbreviations, Catppuccin theme, vi bindings, secrets) and **`functions/`** for `dfu`, `load_secret`, `cdgr`, `up`, helpers, plus **`fish_prompt`** / **`fish_right_prompt`** (cwd + `USER at <~/.name>` + `fish_git_prompt`). Not ported from zsh: async right-prompt, `tog` / `vshow` / `vmultiline`.
-- **Vim externals** ([`.chezmoiexternal.toml`](.chezmoiexternal.toml)): [vim-polyglot](https://github.com/sheerun/vim-polyglot) for bundled syntax; [vim-go](https://github.com/fatih/vim-go) with **`g:polyglot_disabled = ['go']`** in `dot_vimrc` so Go stays on vim-go. Separate trees for [preservim/nerdtree](https://github.com/preservim/nerdtree), [lightline.vim](https://github.com/itchyny/lightline.vim), [material.vim](https://github.com/kaicataldo/material.vim), [incsearch.vim](https://github.com/haya14busa/incsearch.vim).
+- **Fish** (`dot_config/fish/`): `conf.d/` snippets (PATH from **`00-chezmoi-path.fish.tmpl`**, env, abbreviations, Catppuccin theme, vi bindings, secrets) and **`functions/`** for `dfu`, `dfup`, `load_secret`, `cdgr`, `up`, helpers, plus **`fish_prompt`** / **`fish_right_prompt`** (cwd + `USER at <~/.name>` + `fish_git_prompt`). Not ported from zsh: async right-prompt, `tog` / `vshow` / `vmultiline`.
+- **Vim externals** ([`.chezmoiexternal.toml`](.chezmoiexternal.toml), commit-pinned archives): [vim-polyglot](https://github.com/sheerun/vim-polyglot) for bundled syntax; [vim-go](https://github.com/fatih/vim-go) with **`g:polyglot_disabled = ['go']`** in `dot_vimrc` so Go stays on vim-go. Separate trees for [preservim/nerdtree](https://github.com/preservim/nerdtree), [lightline.vim](https://github.com/itchyny/lightline.vim), [material.vim](https://github.com/kaicataldo/material.vim), [incsearch.vim](https://github.com/haya14busa/incsearch.vim).
 - **`dot_zshrc.tmpl`**: main zsh init (PATH, Homebrew on macOS, shared `~/.shell` and `~/.zsh` bits). Optional **`~/.zshrc.local`** is sourced last for machine-only overrides (not in this repo).
 - **`dot_hammerspoon/`** is skipped on non-macOS via **`.chezmoiignore.tmpl`**.
 - **`dotfiles-local/`** is ignored until removed locally.

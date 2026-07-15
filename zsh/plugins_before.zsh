@@ -1,4 +1,4 @@
 # External plugins (initialized before)
 
-# zsh-completions
-fpath=(~/.zsh/plugins/zsh-completions/src $fpath)
+# zsh-completions (chezmoi-pinned archive under ~/.local/share)
+fpath=(~/.local/share/zsh/plugins/zsh-completions/src $fpath)

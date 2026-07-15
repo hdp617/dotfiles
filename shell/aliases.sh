@@ -19,10 +19,16 @@ alias mv='mv -i'
 # git related aliases
 alias gag='git exec ag'
 
-# Update dotfiles (requires chezmoi init so source-path and config exist)
+# Update dotfiles (requires chezmoi init so source-path and config exist).
+# Plugin archives stay commit-pinned in .chezmoiexternal.toml; use dfup to
+# re-download those pins (bump commit + sha256 there to change versions).
 dfu() {
     chezmoi git pull -- --ff-only || return 1
-    chezmoi apply --mode symlink --refresh-externals=always
+    chezmoi apply --mode symlink --refresh-externals=never || return 1
+}
+
+dfup() {
+    chezmoi apply --mode symlink --refresh-externals=always || return 1
 }
 
 # Use pip without requiring virtualenv

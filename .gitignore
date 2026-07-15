@@ -1,5 +1,6 @@
-# Populated by chezmoi git-repo externals (.chezmoiexternal.toml); do not commit clones
-/vim/
-/zsh/plugins
+# Leftover git-repo clones from before plugins moved to ~/.local/share (see .chezmoiexternal.toml)
+/vim/pack
+/zsh/plugins/zsh-completions
+/zsh/plugins/zsh-syntax-highlighting
 
 .DS_Store
