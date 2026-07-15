@@ -4,3 +4,6 @@
 /zsh/plugins/zsh-syntax-highlighting
 
 .DS_Store
+
+__pycache__/
+*.py[cod]
