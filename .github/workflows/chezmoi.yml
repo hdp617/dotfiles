@@ -5,16 +5,88 @@ on:
     branches: [main]
   pull_request:
 
+# Least privilege: this workflow only needs the checked-out tree.
+permissions:
+  contents: read
+
+env:
+  CHEZMOI_VERSION: "2.71.0"
+  # sha256 of chezmoi_2.71.0_linux_amd64.tar.gz from the GitHub release checksums file.
+  CHEZMOI_SHA256: "6ea2040ecc0e82d3dac604289e100b0157afefcd94ebb818e5f6e31655156d34"
+
 jobs:
-  validate:
+  # Safe on untrusted PRs: no template execution (chezmoi templates can run host commands via output).
+  static:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Install chezmoi
+      - name: Install chezmoi (pinned + checksum)
         run: |
-          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+          set -euo pipefail
+          archive="chezmoi_${CHEZMOI_VERSION}_linux_amd64.tar.gz"
+          url="https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/${archive}"
+          curl -fsSL -o "/tmp/${archive}" "$url"
+          echo "${CHEZMOI_SHA256}  /tmp/${archive}" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf "/tmp/${archive}" -C "$HOME/.local/bin" chezmoi
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          chezmoi --version
+
+      - name: Reject template command-execution primitives
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          # Match output used as a template function (direct call or pipeline).
+          danger = re.compile(
+              r"\{\{(?:(?!\}\}).)*\boutput\b(?:(?!\}\}).)*\}\}",
+              re.DOTALL,
+          )
+          bad = []
+          for path in Path(".").rglob("*.tmpl"):
+              if ".git" in path.parts:
+                  continue
+              text = path.read_text(encoding="utf-8", errors="replace")
+              if danger.search(text):
+                  bad.append(str(path))
+          if bad:
+              print("Templates must not call output (arbitrary host command execution):", file=sys.stderr)
+              for p in bad:
+                  print(f"  {p}", file=sys.stderr)
+              sys.exit(1)
+          print("No output template function usage found.")
+          PY
+
+      - name: Validate chezmoi source metadata
+        run: |
+          set -euo pipefail
+          test -f .chezmoi.toml.tmpl
+          test -f .chezmoiexternal.toml
+          chezmoi --version >/dev/null
+
+  # Full template render / dry-run only on trusted push to main (after merge).
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: static
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install chezmoi (pinned + checksum)
+        run: |
+          set -euo pipefail
+          archive="chezmoi_${CHEZMOI_VERSION}_linux_amd64.tar.gz"
+          url="https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/${archive}"
+          curl -fsSL -o "/tmp/${archive}" "$url"
+          echo "${CHEZMOI_SHA256}  /tmp/${archive}" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf "/tmp/${archive}" -C "$HOME/.local/bin" chezmoi
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Write test chezmoi config
