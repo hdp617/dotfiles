@@ -5,7 +5,7 @@
 # the source Brewfile with whatever happens to be installed on this machine.
 set -eu
 command -v brew >/dev/null 2>&1 || {
-  echo "homebrew not found; skip package install" >&2
+  echo "homebrew not found; cannot install packages" >&2
   exit 1
 }
 brew bundle --global
