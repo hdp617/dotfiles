@@ -32,6 +32,7 @@ jobs:
           url="https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/${bin}"
           curl -fsSL -o "/tmp/${bin}" "$url"
           echo "${OSV_SCANNER_SHA256}  /tmp/${bin}" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
           install -m 0755 "/tmp/${bin}" "$HOME/.local/bin/osv-scanner"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           osv-scanner --version
