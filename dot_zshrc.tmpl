@@ -2,8 +2,8 @@
 # Functions
 source ~/.shell/functions.sh
 
-# PATH: user bin, then Homebrew (macOS only)
-path_prepend "$HOME/.bin"
+# PATH: user bin (~/.local/bin), then Homebrew (macOS only)
+path_prepend "$HOME/.local/bin"
 
 {{ if eq .chezmoi.os "darwin" -}}
 export HOMEBREW_NO_ANALYTICS=1
