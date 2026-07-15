@@ -1,8 +1,8 @@
 # External plugins (initialized after)
 
-# Syntax highlighting (chezmoi-pinned archive under ~/.local/share)
+# Syntax highlighting (git submodule under ~/.zsh/plugins)
 
-source ~/.local/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 

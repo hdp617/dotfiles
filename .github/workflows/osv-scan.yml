@@ -1,0 +1,45 @@
+name: osv-scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OSV_SCANNER_VERSION: "2.4.0"
+  # sha256 of osv-scanner_linux_amd64 from the release SHA256SUMS file.
+  OSV_SCANNER_SHA256: "15314940c10d26af9c6649f150b8a47c1262e8fc7e17b1d1029b0e479e8ed8a0"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with plugin submodules)
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          submodules: recursive
+
+      - name: Install osv-scanner (pinned + checksum)
+        run: |
+          set -euo pipefail
+          bin="osv-scanner_linux_amd64"
+          url="https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/${bin}"
+          curl -fsSL -o "/tmp/${bin}" "$url"
+          echo "${OSV_SCANNER_SHA256}  /tmp/${bin}" | sha256sum -c -
+          install -m 0755 "/tmp/${bin}" "$HOME/.local/bin/osv-scanner"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          osv-scanner --version
+
+      - name: Scan repository and submodules
+        run: |
+          set -euo pipefail
+          # --include-git-root scans commit pins for the parent repo and submodules.
+          osv-scanner scan source -r --include-git-root \
+            --experimental-exclude 'r:vim/pack/vendor/start/vim-go/autoload/go/test-fixtures' \
+            --format table .

@@ -1,6 +1,3 @@
-# Leftover git-repo clones from before plugins moved to ~/.local/share (see .chezmoiexternal.toml)
-/vim/pack
-/zsh/plugins/zsh-completions
-/zsh/plugins/zsh-syntax-highlighting
-
+# Regular tracked files live under vim/ and zsh/; plugin packs are git submodules
+# (see .gitmodules). Keep host junk out of the source tree.
 .DS_Store

@@ -20,15 +20,11 @@ alias mv='mv -i'
 alias gag='git exec ag'
 
 # Update dotfiles (requires chezmoi init so source-path and config exist).
-# Plugin archives stay commit-pinned in .chezmoiexternal.toml; use dfup to
-# re-download those pins (bump commit + sha256 there to change versions).
+# Plugin packs are git submodules; Dependabot bumps their pins.
 dfu() {
-    chezmoi git pull -- --ff-only || return 1
-    chezmoi apply --mode symlink --refresh-externals=never || return 1
-}
-
-dfup() {
-    chezmoi apply --mode symlink --refresh-externals=always || return 1
+    chezmoi git pull -- --ff-only --recurse-submodules || return 1
+    chezmoi git submodule update --init --recursive || return 1
+    chezmoi apply --mode symlink || return 1
 }
 
 # Use pip without requiring virtualenv
