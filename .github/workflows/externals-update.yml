@@ -1,0 +1,55 @@
+name: externals-update
+
+on:
+  schedule:
+    # Weekly pin bumps; opens a PR when default-branch HEADs move.
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: externals-update
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Bump pinned archive commits + checksums
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 .github/scripts/chezmoi_externals.py update
+
+      - name: Scan updated pins (OSV)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 .github/scripts/chezmoi_externals.py scan --fail-on-vuln
+
+      - name: Create pull request
+        id: cpr
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore(externals): bump pinned plugin archives
+
+            Auto-update from default-branch HEAD with refreshed SHA-256 checksums.
+          branch: chore/chezmoi-externals
+          title: "chore(externals): bump pinned plugin archives"
+          body: |
+            Automated bump of commit-pinned chezmoi archive externals in `.chezmoiexternal.toml`.
+
+            - Pins moved to each upstream default-branch HEAD
+            - `checksum.sha256` regenerated from the GitHub archive tarball
+            - OSV commit scan ran in this workflow before opening the PR
+
+            After merge, run `dfup` (or `chezmoi apply --refresh-externals=always`) on machines that already have the old extracts.
+          add-paths: |
+            .chezmoiexternal.toml
+          delete-branch: true

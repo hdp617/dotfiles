@@ -35,6 +35,21 @@ chezmoi apply --refresh-externals=never
 
 Or **`dfu`** (same steps). Use **`dfup`** only when re-applying/re-downloading the pinned plugin archives.
 
+## Plugin pin maintenance
+
+Pinned archives in [`.chezmoiexternal.toml`](.chezmoiexternal.toml) are maintained by CI:
+
+- **Scan (OSV):** [`.github/workflows/externals-scan.yml`](.github/workflows/externals-scan.yml) runs on PRs/pushes that touch the pins and weekly; fails if [OSV](https://osv.dev/) reports issues for a pinned commit.
+- **Auto-update:** [`.github/workflows/externals-update.yml`](.github/workflows/externals-update.yml) weekly (or manual) bumps each pin to upstream default-branch HEAD, refreshes `checksum.sha256`, re-scans, and opens a PR.
+
+Locally:
+
+```bash
+python3 .github/scripts/chezmoi_externals.py list
+python3 .github/scripts/chezmoi_externals.py scan --fail-on-vuln
+python3 .github/scripts/chezmoi_externals.py update --dry-run
+```
+
 ## Layout notes
 
 - **Fish** (`dot_config/fish/`): `conf.d/` snippets (PATH from **`00-chezmoi-path.fish.tmpl`**, env, abbreviations, Catppuccin theme, vi bindings, secrets) and **`functions/`** for `dfu`, `dfup`, `load_secret`, `cdgr`, `up`, helpers, plus **`fish_prompt`** / **`fish_right_prompt`** (cwd + `USER at <~/.name>` + `fish_git_prompt`). Not ported from zsh: async right-prompt, `tog` / `vshow` / `vmultiline`.

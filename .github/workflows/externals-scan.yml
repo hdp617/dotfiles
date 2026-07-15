@@ -1,0 +1,33 @@
+name: externals-scan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .chezmoiexternal.toml
+      - .github/scripts/chezmoi_externals.py
+      - .github/workflows/externals-scan.yml
+  pull_request:
+    paths:
+      - .chezmoiexternal.toml
+      - .github/scripts/chezmoi_externals.py
+      - .github/workflows/externals-scan.yml
+  schedule:
+    # Weekly, a few hours before the auto-update workflow.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  osv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Scan pinned archive commits (OSV)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 .github/scripts/chezmoi_externals.py scan --fail-on-vuln
