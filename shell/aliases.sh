@@ -21,9 +21,10 @@ alias gag='git exec ag'
 
 # Update dotfiles (requires chezmoi init so source-path and config exist).
 # Plugin packs are git submodules; Dependabot bumps their pins.
+# Flags for git must come after `chezmoi git --` so chezmoi does not parse them.
 dfu() {
-    chezmoi git pull -- --ff-only --recurse-submodules || return 1
-    chezmoi git submodule update --init --recursive || return 1
+    chezmoi git -- pull --ff-only --recurse-submodules || return 1
+    chezmoi git -- submodule update --init --recursive || return 1
     chezmoi apply --mode symlink || return 1
 }
 

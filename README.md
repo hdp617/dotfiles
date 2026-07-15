@@ -18,7 +18,7 @@ Large trees (`vim/`, `zsh/`, `shell/` under the source dir) are symlinked into `
 3. Initialize plugin submodules in the chezmoi source checkout:
 
    ```bash
-   chezmoi git submodule update --init --recursive
+   chezmoi git -- submodule update --init --recursive
    ```
 
    Removable leftovers from older layouts: `~/.local/share/vim`, `~/.local/share/zsh/plugins`, and any non-submodule clones under `~/.vim/pack` / `~/.zsh/plugins/zsh-*`.
