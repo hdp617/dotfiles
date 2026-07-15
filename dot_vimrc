@@ -1,8 +1,5 @@
 set nocompatible " not vi compatible
 
-" Chezmoi-pinned plugin packs (see .chezmoiexternal.toml) live outside the ~/.vim symlink
-set packpath^=~/.local/share/vim
-
 " Before polyglot loads: use fatih/vim-go instead of polyglot's syntax-only go pack
 let g:polyglot_disabled = ['go']
 

@@ -1,4 +1,4 @@
-# Keep GitHub Actions up to date (including SHA-pinned uses with version comments).
+# Keep GitHub Actions and plugin git submodules up to date.
 # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot
 
 version: 2
@@ -9,5 +9,14 @@ updates:
       interval: "weekly"
     groups:
       github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      plugin-submodules:
         patterns:
           - "*"
