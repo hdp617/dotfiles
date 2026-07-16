@@ -26,7 +26,7 @@ cask "google-chrome"
 cask "google-drive"
 cask "hammerspoon"
 cask "jdownloader"
-cask "messenger"
+# messenger removed: Homebrew cask discontinued (download 404) as of 2025-12-25
 cask "obsidian"
 cask "openclaw"
 cask "spotify"

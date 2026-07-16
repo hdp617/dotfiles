@@ -1,12 +1,19 @@
 {{- if eq .chezmoi.os "darwin" -}}
 #!/bin/sh
-# Install packages from the chezmoi-managed ~/.Brewfile (dot_Brewfile).
+# Install missing packages from the chezmoi-managed ~/.Brewfile (dot_Brewfile).
 # Do not run `brew bundle dump` here: with mode=symlink that would overwrite
 # the source Brewfile with whatever happens to be installed on this machine.
 set -eu
 command -v brew >/dev/null 2>&1 || {
-  echo "homebrew not found; cannot install packages" >&2
+  echo "homebrew not found; skip package install" >&2
+  exit 0
+}
+brewfile="${HOME}/.Brewfile"
+test -f "${brewfile}" || {
+  echo "Brewfile not found: ${brewfile}" >&2
   exit 1
 }
-brew bundle --global
+# --no-upgrade: install only what is missing; avoid upgrading everything on each apply.
+export HOMEBREW_NO_AUTO_UPDATE=1
+brew bundle --file="${brewfile}" --no-upgrade
 {{- end -}}
