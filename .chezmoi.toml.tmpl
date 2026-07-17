@@ -1,9 +1,70 @@
-{{- $gitName := promptStringOnce . "git_name" "Git user.name for ~/.gitconfig_local" "" -}}
-{{- $gitEmail := promptStringOnce . "git_email" "Git user.email for ~/.gitconfig_local" "" -}}
-{{- $githubUser := promptStringOnce . "github_user" "GitHub username for [github] user in ~/.gitconfig_local" "" -}}
+# .chezmoi.toml.tmpl
+
+{{- $traits := list
+    "desktop"
+    "headless"
+    "shell-full"
+    "shell-lite"
+    "stack-cloud"
+    "stack-ai"
+-}}
+
+{{- $profiles := dict
+    "personal-laptop" (dict "target_os" "darwin" "context" "personal" "traits" (list "desktop" "shell-full"))
+    "personal-server" (dict "target_os" "darwin" "context" "personal" "traits" (list "headless" "shell-full" "stack-ai"))
+    "corp-laptop" (dict "target_os" "darwin" "context" "corp" "traits" (list "desktop" "shell-full" "stack-cloud"))
+    "corp-devbox" (dict "target_os" "linux" "context" "corp" "traits" (list "headless" "shell-full" "stack-cloud"))
+    "ephemeral-sandbox" (dict "target_os" "any" "context" "none" "traits" (list "headless" "shell-lite"))
+-}}
+
+{{- $profileKeys := keys $profiles | sortAlpha -}}
+{{- writeToStdout "\nAvailable profiles:\n" -}}
+{{- range $index, $key := $profileKeys -}}
+{{-   writeToStdout (printf "  %d. %s\n" (add $index 1) $key) -}}
+{{- end -}}
+
+{{- $choiceStr := promptStringOnce . "profileIndex" "\nType the number of the machine profile" "" -}}
+{{- $choice := atoi $choiceStr -}}
+{{- $choiceIndex := sub $choice 1 -}}
+
+{{- if or (lt $choiceIndex 0) (ge $choiceIndex (len $profileKeys)) -}}
+{{-   writeToStdout (printf "\n[FATAL] Invalid choice: '%s'. Must be a number between 1 and %d.\n" $choiceStr (len $profileKeys)) -}}
+{{-   exit 1 -}}
+{{- end -}}
+
+{{- $profileName := index $profileKeys $choiceIndex -}}
+{{- $profile := index $profiles $profileName -}}
+
+{{- if and (ne $profile.target_os "any") (ne $profile.target_os .chezmoi.os) -}}
+{{-   writeToStdout (printf "\n[FATAL] Profile '%s' expects OS '%s', but got '%s'.\n" $profileName $profile.target_os .chezmoi.os) -}}
+{{-   exit 1 -}}
+{{- end -}}
+
+{{- range $trait := $profile.traits -}}
+{{-   if not (has $trait $traits) -}}
+{{-     writeToStdout (printf "\n[FATAL] Profile '%s' requested undefined trait: '%s'\n" $profileName $trait) -}}
+{{-     exit 1 -}}
+{{-   end -}}
+{{- end -}}
+
+{{- $gitName := "Huy Pham" -}}
+{{- $githubUser := "hdp617" -}}
+{{- $gitEmail := "" -}}
+
+{{- if eq $profile.context "corp" -}}
+{{-   $gitEmail = "huypham@google.com" -}}
+{{- else -}}
+{{-   $gitEmail = "github@huyph.am" -}}
+{{- end -}}
+
 mode = "symlink"
 
 [data]
-git_name = {{ $gitName | quote }}
-git_email = {{ $gitEmail | quote }}
-github_user = {{ $githubUser | quote }}
+    git_name = {{ $gitName | quote }}
+    git_email = {{ $gitEmail | quote }}
+    github_user = {{ $githubUser | quote }}
+
+    [data.machine]
+        profile = {{ $profileName | quote }}
+        context = {{ $profile.context | quote }}
+        traits = {{ $profile.traits | toJson }}
